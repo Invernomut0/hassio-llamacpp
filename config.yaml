@@ -1,5 +1,5 @@
 name: "Llama.cpp LLM Server"
-version: "1.0.0"
+version: "1.0.1"
 slug: llamacpp_llm
 description: "Server LLM locale basato su llama.cpp con API compatibile OpenAI per Home Assistant"
 arch:
