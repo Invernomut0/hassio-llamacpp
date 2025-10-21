@@ -1,14 +1,17 @@
 # Llama.cpp LLM Server - Home Assistant Addon
 
-![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-Home Assistant addon that integrates [llama.cpp](https://github.com/ggml-org/llama.cpp) to run LLM (Large Language Models) locally with OpenAI-compatible API.
+Home Assistant addon that integrates [llama.cpp](https://github.com/ggml-org/llama.cpp) to run LLM (Large Language Models) locally with OpenAI-compatible API and **full Home Assistant integration**.
 
 > 🆘 **Having issues?** → Check the [Quick Fix Guide](QUICKFIX.md) or [Complete Troubleshooting Guide](TROUBLESHOOTING.md)
+> 
+> 🏠 **Home Assistant Integration** → See [HA Integration Guide](HA_INTEGRATION.md) for full entity and service access
 
 ## 🎯 Features
 
+### Core Features
 - ✅ **Local LLM Server** - No dependency on cloud services
 - ✅ **OpenAI-Compatible API** - Easy integration with existing clients
 - ✅ **Multi-turn Conversations** - Maintains conversation context
@@ -16,6 +19,13 @@ Home Assistant addon that integrates [llama.cpp](https://github.com/ggml-org/lla
 - ✅ **GPU Support** - CUDA acceleration (optional)
 - ✅ **Optimized Performance** - Quantization and efficient batching
 - ✅ **Health Monitoring** - Endpoint to check service status
+
+### 🆕 Home Assistant Integration
+- 🏠 **Full Entity Access** - LLM can see all your lights, switches, sensors, etc.
+- 🛠️ **Service Control** - Direct control of Home Assistant services
+- 📊 **System Information** - Access to HA configuration and state
+- 🎯 **Domain Filtering** - Focus on specific entity types
+- 🔄 **Real-time Context** - Always up-to-date information about your smart home
 
 ## 📋 Requirements
 
@@ -154,7 +164,59 @@ curl http://homeassistant.local:8080/health
 
 ### Home Assistant API (Port 5000)
 
-#### Single Chat
+#### 🆕 Chat with Home Assistant Context
+```bash
+curl -X POST http://homeassistant.local:5000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What lights are currently on?",
+    "include_entities": true,
+    "entity_domains": ["light"]
+  }'
+```
+
+**Response:**
+```json
+{
+  "response": "Currently, you have 3 lights on: Living Room Light, Kitchen Light, and Bedroom Light.",
+  "usage": {
+    "prompt_tokens": 150,
+    "completion_tokens": 25,
+    "total_tokens": 175
+  }
+}
+```
+
+#### 🆕 Get All Home Assistant Entities
+```bash
+curl http://homeassistant.local:5000/api/ha/entities?domain=light
+```
+
+#### 🆕 Get Specific Entity
+```bash
+curl http://homeassistant.local:5000/api/ha/entity/light.living_room
+```
+
+#### 🆕 Call Home Assistant Service
+```bash
+curl -X POST http://homeassistant.local:5000/api/ha/service/call \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "light",
+    "service": "turn_on",
+    "entity_id": "light.living_room",
+    "data": {"brightness": 200}
+  }'
+```
+
+#### 🆕 Get Home Assistant Context for LLM
+```bash
+curl "http://homeassistant.local:5000/api/ha/context?entities=true&domains=light,switch"
+```
+
+> **📖 Full API documentation**: See [HA_INTEGRATION.md](HA_INTEGRATION.md) for complete API reference and usage examples.
+
+#### Single Chat (Legacy)
 ```bash
 curl -X POST http://homeassistant.local:5000/api/chat \
   -H "Content-Type: application/json" \
@@ -168,7 +230,7 @@ curl -X POST http://homeassistant.local:5000/api/chat \
 **Response:**
 ```json
 {
-  "response": "I'm sorry, but I don't have access to your sensor data...",
+  "response": "I can help you check the temperature...",
   "usage": {
     "prompt_tokens": 25,
     "completion_tokens": 50,

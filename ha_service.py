@@ -14,6 +14,9 @@ import requests
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+# Importa modulo integrazione HA
+from ha_integration import HomeAssistantClient, HAContextBuilder
+
 # Configurazione logging
 logging.basicConfig(
     level=logging.INFO,
@@ -27,6 +30,10 @@ CORS(app)
 
 # URL del server llama.cpp locale
 LLAMA_SERVER_URL = "http://localhost:8080"
+
+# Inizializza client Home Assistant
+ha_client = HomeAssistantClient()
+ha_context = HAContextBuilder(ha_client)
 
 # Sessioni di conversazione (storage in memoria)
 conversations: Dict[str, list] = {}
@@ -105,7 +112,10 @@ def chat():
         {
             "message": "Ciao, come stai?",
             "temperature": 0.7,  # opzionale
-            "max_tokens": 512    # opzionale
+            "max_tokens": 512,   # opzionale
+            "include_entities": true,  # opzionale, include contesto entità HA
+            "include_services": false, # opzionale, include contesto servizi HA
+            "entity_domains": ["light", "switch"]  # opzionale, filtra per domini
         }
     
     Returns:
@@ -122,10 +132,33 @@ def chat():
         user_message = data['message']
         temperature = data.get('temperature', 0.7)
         max_tokens = data.get('max_tokens', 512)
+        include_entities = data.get('include_entities', True)
+        include_services = data.get('include_services', False)
+        entity_domains = data.get('entity_domains')
         
-        # Crea messaggio nel formato OpenAI
+        # Costruisci contesto Home Assistant
+        ha_context_text = ""
+        if include_entities or include_services:
+            try:
+                ha_context_text = ha_context.build_full_context(
+                    include_entities=include_entities,
+                    include_services=include_services,
+                    include_system=True,
+                    entity_domains=entity_domains
+                )
+            except Exception as e:
+                logger.warning(f"Impossibile ottenere contesto HA: {e}")
+                ha_context_text = ""
+        
+        # Crea messaggio nel formato OpenAI con contesto HA
+        system_prompt = "Sei un assistente virtuale per Home Assistant. "
+        if ha_context_text:
+            system_prompt += "Hai accesso alle seguenti informazioni sul sistema:\n\n" + ha_context_text
+        else:
+            system_prompt += "Aiuti gli utenti a gestire la loro casa intelligente."
+        
         messages = [
-            {"role": "system", "content": "Sei un assistente virtuale utile e cortese per Home Assistant."},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}
         ]
         
@@ -384,6 +417,192 @@ def get_models():
     
     except Exception as e:
         logger.error(f"Errore in /api/models: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ========== ENDPOINTS HOME ASSISTANT INTEGRATION ==========
+
+@app.route('/api/ha/entities', methods=['GET'])
+def get_ha_entities():
+    """
+    Ottiene tutte le entità di Home Assistant.
+    
+    Query params:
+        domain: Filtra per dominio (opzionale)
+    
+    Returns:
+        {
+            "entities": [...]
+        }
+    """
+    try:
+        domain = request.args.get('domain')
+        states = ha_client.get_states()
+        
+        if not states:
+            return jsonify({"error": "Impossibile ottenere entità"}), 500
+        
+        # Filtra per dominio se richiesto
+        if domain:
+            states = [s for s in states if s.get('entity_id', '').startswith(f'{domain}.')]
+        
+        return jsonify({"entities": states})
+    
+    except Exception as e:
+        logger.error(f"Errore in /api/ha/entities: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/ha/entity/<path:entity_id>', methods=['GET'])
+def get_ha_entity(entity_id: str):
+    """
+    Ottiene info su un'entità specifica.
+    
+    Returns:
+        {
+            "entity_id": "...",
+            "state": "...",
+            "attributes": {...}
+        }
+    """
+    try:
+        states = ha_client.get_states(entity_id)
+        
+        if not states or not states[0]:
+            return jsonify({"error": f"Entità '{entity_id}' non trovata"}), 404
+        
+        return jsonify(states[0])
+    
+    except Exception as e:
+        logger.error(f"Errore in /api/ha/entity/{entity_id}: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/ha/services', methods=['GET'])
+def get_ha_services():
+    """
+    Ottiene tutti i servizi disponibili in Home Assistant.
+    
+    Returns:
+        {
+            "services": {...}
+        }
+    """
+    try:
+        services = ha_client.get_services()
+        
+        if not services:
+            return jsonify({"error": "Impossibile ottenere servizi"}), 500
+        
+        return jsonify({"services": services})
+    
+    except Exception as e:
+        logger.error(f"Errore in /api/ha/services: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/ha/service/call', methods=['POST'])
+def call_ha_service():
+    """
+    Chiama un servizio di Home Assistant.
+    
+    Body JSON:
+        {
+            "domain": "light",
+            "service": "turn_on",
+            "entity_id": "light.living_room",  # opzionale
+            "data": {...}  # dati aggiuntivi opzionali
+        }
+    
+    Returns:
+        {
+            "success": true,
+            "result": {...}
+        }
+    """
+    try:
+        data = request.get_json()
+        if not data or 'domain' not in data or 'service' not in data:
+            return jsonify({"error": "Campi 'domain' e 'service' richiesti"}), 400
+        
+        domain = data['domain']
+        service = data['service']
+        entity_id = data.get('entity_id')
+        service_data = data.get('data', {})
+        
+        result = ha_client.call_service(domain, service, entity_id, **service_data)
+        
+        if result is None:
+            return jsonify({"error": "Errore chiamata servizio"}), 500
+        
+        return jsonify({
+            "success": True,
+            "result": result
+        })
+    
+    except Exception as e:
+        logger.error(f"Errore in /api/ha/service/call: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/ha/config', methods=['GET'])
+def get_ha_config():
+    """
+    Ottiene la configurazione di Home Assistant.
+    
+    Returns:
+        {
+            "config": {...}
+        }
+    """
+    try:
+        config = ha_client.get_config()
+        
+        if not config:
+            return jsonify({"error": "Impossibile ottenere configurazione"}), 500
+        
+        return jsonify({"config": config})
+    
+    except Exception as e:
+        logger.error(f"Errore in /api/ha/config: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/ha/context', methods=['GET'])
+def get_ha_context():
+    """
+    Ottiene il contesto formattato di Home Assistant per il LLM.
+    
+    Query params:
+        entities: Include entità (default: true)
+        services: Include servizi (default: false)
+        system: Include info di sistema (default: true)
+        domains: Lista domini separati da virgola (es: light,switch)
+    
+    Returns:
+        {
+            "context": "..."
+        }
+    """
+    try:
+        include_entities = request.args.get('entities', 'true').lower() == 'true'
+        include_services = request.args.get('services', 'false').lower() == 'true'
+        include_system = request.args.get('system', 'true').lower() == 'true'
+        domains_param = request.args.get('domains')
+        
+        entity_domains = domains_param.split(',') if domains_param else None
+        
+        context = ha_context.build_full_context(
+            include_entities=include_entities,
+            include_services=include_services,
+            include_system=include_system,
+            entity_domains=entity_domains
+        )
+        
+        return jsonify({"context": context})
+    
+    except Exception as e:
+        logger.error(f"Errore in /api/ha/context: {e}")
         return jsonify({"error": str(e)}), 500
 
 
