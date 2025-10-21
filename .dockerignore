@@ -1,0 +1,18 @@
+# Llama.cpp Home Assistant Addon
+
+Addon per Home Assistant che integra llama.cpp
+
+## Build
+
+```bash
+docker build -t llamacpp-addon .
+```
+
+## Struttura
+
+- `config.yaml` - Configurazione addon Home Assistant
+- `Dockerfile` - Build multi-stage per llama.cpp
+- `run.sh` - Script di avvio principale
+- `ha_service.py` - Servizio API Python per Home Assistant
+- `README.md` - Documentazione completa
+- `tests/` - Test suite con dati reali
