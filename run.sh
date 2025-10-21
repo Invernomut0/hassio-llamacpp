@@ -47,8 +47,4 @@ exec llama-server \
     --n-gpu-layers "$GPU_LAYERS" \
     --parallel "$PARALLEL" \
     --host 0.0.0.0 \
-    --port 8080 \
-    --log-format text \
-    --metrics \
-    --cont-batching \
-    --flash-attn
+    --port 8080

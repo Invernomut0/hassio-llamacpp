@@ -1,51 +1,51 @@
 # Llama.cpp LLM Server - Home Assistant Addon
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-Addon per Home Assistant che integra [llama.cpp](https://github.com/ggml-org/llama.cpp) per eseguire modelli LLM (Large Language Models) localmente con API compatibili OpenAI.
+Home Assistant addon that integrates [llama.cpp](https://github.com/ggml-org/llama.cpp) to run LLM (Large Language Models) locally with OpenAI-compatible API.
 
-> 🆘 **Hai problemi?** → Consulta la [Guida Rapida QUICKFIX](QUICKFIX.md) o la [Guida Troubleshooting Completa](TROUBLESHOOTING.md)
+> 🆘 **Having issues?** → Check the [Quick Fix Guide](QUICKFIX.md) or [Complete Troubleshooting Guide](TROUBLESHOOTING.md)
 
-## 🎯 Caratteristiche
+## 🎯 Features
 
-- ✅ **Server LLM locale** - Nessuna dipendenza da servizi cloud
-- ✅ **API compatibili OpenAI** - Integrazione semplice con client esistenti
-- ✅ **Conversazioni multi-turno** - Mantiene il contesto delle conversazioni
-- ✅ **Modelli configurabili** - Scarica automaticamente i modelli GGUF da Hugging Face
-- ✅ **Supporto GPU** - Accelerazione con CUDA (opzionale)
-- ✅ **Performance ottimizzate** - Quantizzazione e batching efficiente
-- ✅ **Health monitoring** - Endpoint per verificare lo stato del servizio
+- ✅ **Local LLM Server** - No dependency on cloud services
+- ✅ **OpenAI-Compatible API** - Easy integration with existing clients
+- ✅ **Multi-turn Conversations** - Maintains conversation context
+- ✅ **Configurable Models** - Automatically downloads GGUF models from Hugging Face
+- ✅ **GPU Support** - CUDA acceleration (optional)
+- ✅ **Optimized Performance** - Quantization and efficient batching
+- ✅ **Health Monitoring** - Endpoint to check service status
 
-## 📋 Requisiti
+## 📋 Requirements
 
-- Home Assistant OS o Supervised
-- Almeno 4 GB di RAM (8 GB raccomandati per modelli grandi)
-- 10+ GB di spazio disco per i modelli
-- (Opzionale) GPU NVIDIA per accelerazione
+- Home Assistant OS or Supervised
+- At least 4 GB RAM (8 GB recommended for large models)
+- 10+ GB disk space for models
+- (Optional) NVIDIA GPU for acceleration
 
-## 🚀 Installazione
+## 🚀 Installation
 
-### 1. Aggiungi il Repository
+### 1. Add the Repository
 
-Aggiungi questo repository agli addon di Home Assistant:
+Add this repository to Home Assistant addons:
 
-1. Vai su **Supervisor** → **Add-on Store**
-2. Clicca sui tre puntini in alto a destra → **Repositories**
-3. Aggiungi l'URL: `https://github.com/Invernomut0/hassio-llamacpp`
-4. Clicca **Add**
+1. Go to **Supervisor** → **Add-on Store**
+2. Click the three dots in the top right → **Repositories**
+3. Add the URL: `https://github.com/Invernomut0/hassio-llamacpp`
+4. Click **Add**
 
-### 2. Installa l'Addon
+### 2. Install the Addon
 
-1. Trova "Llama.cpp LLM Server" nella lista degli addon
-2. Clicca su **Install**
-3. **⚠️ IMPORTANTE**: La prima installazione richiederà 15-30 minuti per compilare llama.cpp
-4. Attendi il completamento della build (controlla i log per il progresso)
-5. L'addon scaricherà automaticamente il modello LLM al primo avvio
+1. Find "Llama.cpp LLM Server" in the addon list
+2. Click **Install**
+3. **⚠️ IMPORTANT**: First installation requires 15-30 minutes to compile llama.cpp
+4. Wait for build completion (check logs for progress)
+5. The addon will automatically download the LLM model on first start
 
-### 3. Configura l'Addon
+### 3. Configure the Addon
 
-Vai alla scheda **Configuration** e personalizza le opzioni:
+Go to the **Configuration** tab and customize options:
 
 ```yaml
 model_url: "https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf"
@@ -57,76 +57,76 @@ parallel_requests: 1
 log_level: "info"
 ```
 
-### 4. Avvia l'Addon
+### 4. Start the Addon
 
-1. Attiva le opzioni:
-   - **Start on boot** (raccomandato)
-   - **Watchdog** (raccomandato)
-2. Clicca su **Start**
-3. Controlla i log per verificare il download del modello e l'avvio
+1. Enable options:
+   - **Start on boot** (recommended)
+   - **Watchdog** (recommended)
+2. Click **Start**
+3. Check logs to verify model download and startup
 
-## ⚙️ Configurazione
+## ⚙️ Configuration
 
-### Opzioni Disponibili
+### Available Options
 
-| Opzione | Tipo | Default | Descrizione |
+| Option | Type | Default | Description |
 |---------|------|---------|-------------|
-| `model_url` | URL | gemma-3-1b-it | URL del modello GGUF da scaricare |
-| `model_name` | string | gemma-3-1b-it-Q4_K_M | Nome del modello (usato per il file locale) |
-| `context_size` | int | 2048 | Dimensione del contesto (512-32768) |
-| `threads` | int | 4 | Numero di thread CPU (1-32) |
-| `gpu_layers` | int | 0 | Numero di layer da caricare su GPU (0 = CPU only) |
-| `parallel_requests` | int | 1 | Richieste parallele simultanee (1-8) |
-| `log_level` | string | info | Livello di log (debug, info, warning, error) |
+| `model_url` | URL | gemma-3-1b-it | URL of GGUF model to download |
+| `model_name` | string | gemma-3-1b-it-Q4_K_M | Model name (used for local file) |
+| `context_size` | int | 2048 | Context size (512-32768) |
+| `threads` | int | 4 | Number of CPU threads (1-32) |
+| `gpu_layers` | int | 0 | Number of layers to load on GPU (0 = CPU only) |
+| `parallel_requests` | int | 1 | Simultaneous parallel requests (1-8) |
+| `log_level` | string | info | Log level (debug, info, warning, error) |
 
-### Modelli Consigliati
+### Recommended Models
 
-#### Modelli Leggeri (2-4 GB RAM)
+#### Lightweight Models (2-4 GB RAM)
 ```yaml
-# Gemma 2B (veloce, accurato)
+# Gemma 2B (fast, accurate)
 model_url: "https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf"
 model_name: "gemma-3-1b-it-Q4_K_M"
 
-# Phi-3 Mini (eccellente qualità/dimensione)
+# Phi-3 Mini (excellent quality/size ratio)
 model_url: "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf"
 model_name: "phi-3-mini-q4"
 ```
 
-#### Modelli Medi (6-8 GB RAM)
+#### Medium Models (6-8 GB RAM)
 ```yaml
 # LLaMA 3.2 3B
 model_url: "https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf"
 model_name: "llama-3.2-3b-q4"
 ```
 
-#### Modelli Grandi (12+ GB RAM)
+#### Large Models (12+ GB RAM)
 ```yaml
 # LLaMA 3.1 8B
 model_url: "https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
 model_name: "llama-3.1-8b-q4"
 ```
 
-### Supporto GPU
+### GPU Support
 
-Per abilitare l'accelerazione GPU (solo NVIDIA):
+To enable GPU acceleration (NVIDIA only):
 
-1. Verifica che il tuo sistema supporti CUDA
-2. Configura il numero di layer da caricare sulla GPU:
+1. Verify your system supports CUDA
+2. Configure the number of layers to load on GPU:
 
 ```yaml
-gpu_layers: 35  # Per modelli 7B-8B
+gpu_layers: 35  # For 7B-8B models
 ```
 
-Più layer = più veloce, ma richiede più VRAM.
+More layers = faster, but requires more VRAM.
 
 ## 📡 API Endpoints
 
-L'addon espone due server:
+The addon exposes two servers:
 
-- **Porta 8080**: Server llama.cpp (API OpenAI-compatible)
-- **Porta 5000**: Servizio Home Assistant (API custom)
+- **Port 8080**: llama.cpp server (OpenAI-compatible API)
+- **Port 5000**: Home Assistant service (custom API)
 
-### API OpenAI-Compatible (Porta 8080)
+### OpenAI-Compatible API (Port 8080)
 
 #### Chat Completions
 ```bash
@@ -134,8 +134,8 @@ curl http://homeassistant.local:8080/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "messages": [
-      {"role": "system", "content": "Sei un assistente utile."},
-      {"role": "user", "content": "Ciao, chi sei?"}
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Hello, who are you?"}
     ],
     "temperature": 0.7,
     "max_tokens": 512
@@ -152,23 +152,23 @@ curl http://homeassistant.local:8080/v1/models
 curl http://homeassistant.local:8080/health
 ```
 
-### API Home Assistant (Porta 5000)
+### Home Assistant API (Port 5000)
 
-#### Chat Singolo
+#### Single Chat
 ```bash
 curl -X POST http://homeassistant.local:5000/api/chat \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "Qual è la temperatura in casa?",
+    "message": "What is the temperature at home?",
     "temperature": 0.7,
     "max_tokens": 512
   }'
 ```
 
-**Risposta:**
+**Response:**
 ```json
 {
-  "response": "Mi dispiace, ma non ho accesso ai dati dei tuoi sensori...",
+  "response": "I'm sorry, but I don't have access to your sensor data...",
   "usage": {
     "prompt_tokens": 25,
     "completion_tokens": 50,
@@ -177,52 +177,52 @@ curl -X POST http://homeassistant.local:5000/api/chat \
 }
 ```
 
-#### Avvia Conversazione
+#### Start Conversation
 ```bash
 curl -X POST http://homeassistant.local:5000/api/conversation/start \
   -H "Content-Type: application/json" \
   -d '{
-    "system_prompt": "Sei un assistente per la domotica."
+    "system_prompt": "You are a home automation assistant."
   }'
 ```
 
-**Risposta:**
+**Response:**
 ```json
 {
   "conversation_id": "conv_1729512345_a3b2c1d4",
-  "message": "Conversazione avviata con successo"
+  "message": "Conversation started successfully"
 }
 ```
 
-#### Invia Messaggio in Conversazione
+#### Send Message in Conversation
 ```bash
 curl -X POST http://homeassistant.local:5000/api/conversation/conv_123/message \
   -H "Content-Type: application/json" \
   -d '{
-    "message": "Ricordi cosa ti ho chiesto prima?"
+    "message": "Do you remember what I asked before?"
   }'
 ```
 
-**Risposta:**
+**Response:**
 ```json
 {
-  "response": "Sì, mi hai chiesto...",
+  "response": "Yes, you asked...",
   "usage": {...},
   "message_count": 3
 }
 ```
 
-#### Ottieni Storia Conversazione
+#### Get Conversation History
 ```bash
 curl http://homeassistant.local:5000/api/conversation/conv_123/history
 ```
 
-#### Lista Conversazioni Attive
+#### List Active Conversations
 ```bash
 curl http://homeassistant.local:5000/api/conversations
 ```
 
-#### Elimina Conversazione
+#### Delete Conversation
 ```bash
 curl -X DELETE http://homeassistant.local:5000/api/conversation/conv_123
 ```
@@ -232,11 +232,11 @@ curl -X DELETE http://homeassistant.local:5000/api/conversation/conv_123
 curl http://homeassistant.local:5000/api/health
 ```
 
-## 🏠 Integrazione con Home Assistant
+## 🏠 Home Assistant Integration
 
-### Automazione con RESTful Command
+### Automation with RESTful Command
 
-Aggiungi al tuo `configuration.yaml`:
+Add to your `configuration.yaml`:
 
 ```yaml
 rest_command:
@@ -247,19 +247,19 @@ rest_command:
     payload: '{"message": "{{ message }}"}'
 ```
 
-### Script per Conversazione
+### Script for Conversation
 
 ```yaml
 script:
   chat_with_llm:
-    alias: "Chat con LLM"
+    alias: "Chat with LLM"
     sequence:
       - service: rest_command.ask_llm
         data:
           message: "{{ user_input }}"
 ```
 
-### Sensor per Risposta
+### Sensor for Response
 
 ```yaml
 sensor:
@@ -273,43 +273,43 @@ sensor:
       - active_conversations
 ```
 
-### Automazione Esempio
+### Example Automation
 
 ```yaml
 automation:
-  - alias: "Saluto Mattutino"
+  - alias: "Morning Greeting"
     trigger:
       - platform: time
         at: "07:00:00"
     action:
       - service: rest_command.ask_llm
         data:
-          message: "Buongiorno! Dammi 3 consigli per iniziare bene la giornata."
+          message: "Good morning! Give me 3 tips to start the day well."
       - service: notify.mobile_app
         data:
           message: "{{ states('sensor.llm_response') }}"
 ```
 
-## 🐍 Utilizzo con Python
+## 🐍 Python Usage
 
 ```python
 import requests
 
-# Chat singolo
+# Single chat
 def ask_llm(question: str) -> str:
-    """Chiedi una risposta al LLM."""
+    """Ask the LLM for a response."""
     response = requests.post(
         "http://homeassistant.local:5000/api/chat",
         json={"message": question}
     )
     return response.json()["response"]
 
-# Conversazione multi-turno
+# Multi-turn conversation
 class LLMConversation:
-    """Gestisce una conversazione con il LLM."""
+    """Manages a conversation with the LLM."""
     
     def __init__(self, system_prompt: str = None):
-        """Inizializza una nuova conversazione."""
+        """Initialize a new conversation."""
         data = {}
         if system_prompt:
             data["system_prompt"] = system_prompt
@@ -321,7 +321,7 @@ class LLMConversation:
         self.conversation_id = response.json()["conversation_id"]
     
     def send(self, message: str) -> str:
-        """Invia un messaggio nella conversazione."""
+        """Send a message in the conversation."""
         response = requests.post(
             f"http://homeassistant.local:5000/api/conversation/{self.conversation_id}/message",
             json={"message": message}
@@ -329,85 +329,232 @@ class LLMConversation:
         return response.json()["response"]
     
     def history(self) -> list:
-        """Ottieni la storia della conversazione."""
+        """Get conversation history."""
         response = requests.get(
             f"http://homeassistant.local:5000/api/conversation/{self.conversation_id}/history"
         )
         return response.json()["messages"]
     
     def close(self):
-        """Chiudi la conversazione."""
+        """Close the conversation."""
         requests.delete(
             f"http://homeassistant.local:5000/api/conversation/{self.conversation_id}"
         )
 
-# Esempio di utilizzo
+# Usage example
 if __name__ == "__main__":
-    # Chat singolo
-    answer = ask_llm("Che ore sono?")
-    print(f"Risposta: {answer}")
+    # Single chat
+    answer = ask_llm("What time is it?")
+    print(f"Response: {answer}")
     
-    # Conversazione
-    conv = LLMConversation(system_prompt="Sei un esperto di domotica.")
-    print(conv.send("Ciao! Come posso automatizzare le luci?"))
-    print(conv.send("E i termostati?"))
+    # Conversation
+    conv = LLMConversation(system_prompt="You are a home automation expert.")
+    print(conv.send("Hello! How can I automate my lights?"))
+    print(conv.send("And the thermostats?"))
     conv.close()
 ```
 
 ## 🔍 Troubleshooting
 
-### Il modello non viene scaricato
+### Model not downloading
 
-**Problema**: Il download del modello fallisce o si blocca.
+**Problem**: Model download fails or gets stuck.
 
-**Soluzione**:
-1. Verifica la connettività internet
-2. Controlla lo spazio disco disponibile
-3. Prova un modello più piccolo
-4. Scarica manualmente il modello e posizionalo in `/addon_configs/local_llamacpp/models/`
+**Solution**:
+1. Verify internet connectivity
+2. Check available disk space
+3. Try a smaller model
+4. Manually download the model and place it in `/addon_configs/local_llamacpp/models/`
 
-### Server lento o non risponde
+### Slow server or not responding
 
-**Problema**: Le risposte richiedono troppo tempo o vanno in timeout.
+**Problem**: Responses take too long or timeout.
 
-**Soluzione**:
-1. Riduci `context_size` (es. 1024)
-2. Aumenta `threads` se hai CPU multi-core
-3. Usa un modello quantizzato più piccolo (Q4_0 invece di Q8_0)
-4. Abilita GPU se disponibile
+**Solution**:
+1. Reduce `context_size` (e.g. 1024)
+2. Increase `threads` if you have multi-core CPU
+3. Use a smaller quantized model (Q4_0 instead of Q8_0)
+4. Enable GPU if available
 
-### Errore "Out of Memory"
+### "Out of Memory" Error
 
-**Problema**: Il sistema esaurisce la RAM.
+**Problem**: System runs out of RAM.
 
-**Soluzione**:
-1. Usa un modello più piccolo (1B-3B parametri)
-2. Riduci `context_size`
-3. Riduci `parallel_requests` a 1
-4. Chiudi altre applicazioni per liberare RAM
+**Solution**:
+1. Use a smaller model (1B-3B parameters)
+2. Reduce `context_size`
+3. Reduce `parallel_requests` to 1
+4. Close other applications to free RAM
 
-### GPU non rilevata
+### GPU not detected
 
-**Problema**: `gpu_layers` > 0 ma la GPU non viene usata.
+**Problem**: `gpu_layers` > 0 but GPU is not used.
 
-**Soluzione**:
-1. Verifica che il driver NVIDIA sia installato
-2. Il Dockerfile necessita build con supporto CUDA
-3. Controlla i log per messaggi relativi a CUDA
-4. Usa CPU-only impostando `gpu_layers: 0`
+**Solution**:
+1. Verify NVIDIA driver is installed
+2. Dockerfile needs CUDA support build
+3. Check logs for CUDA-related messages
+4. Use CPU-only by setting `gpu_layers: 0`
 
-## 📊 Performance e Benchmarks
+## 📊 Performance and Benchmarks
 
-### Modelli Testati
+### Tested Models
 
-| Modello | Parametri | Dimensione | RAM | Tokens/s (CPU) | Tokens/s (GPU) |
+| Model | Parameters | Size | RAM | Tokens/s (CPU) | Tokens/s (GPU) |
 |---------|-----------|------------|-----|----------------|----------------|
 | Gemma 3 1B Q4 | 1.5B | 900 MB | 2 GB | ~40 | ~150 |
 | Phi-3 Mini Q4 | 3.8B | 2.3 GB | 4 GB | ~25 | ~100 |
 | LLaMA 3.2 3B Q4 | 3B | 1.9 GB | 4 GB | ~30 | ~120 |
 | LLaMA 3.1 8B Q4 | 8B | 4.7 GB | 8 GB | ~12 | ~60 |
 
-*Test su: Intel i7-12700K, 32GB RAM, RTX 3080*
+*Tested on: Intel i7-12700K, 32GB RAM, RTX 3080*
+
+## 🛠️ Development
+
+### Local Build
+
+```bash
+# Clone repository
+git clone https://github.com/Invernomut0/hassio-llamacpp
+cd hassio-llamacpp
+
+# Build Docker image
+docker build -t local/llamacpp-addon .
+
+# Local test
+docker run -p 8080:8080 -p 5000:5000 \
+  -e MODEL_URL="https://..." \
+  local/llamacpp-addon
+```
+
+### API Testing
+
+```bash
+# Run tests
+python3 tests/test_api.py
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Best Practices
+
+- ✅ Code tested with real data (no mocks)
+- ✅ Complete documentation for each function
+- ✅ Test coverage > 80%
+- ✅ Follow PEP 8 for Python
+- ✅ Atomic commits with descriptive messages
+
+## 🔧 Troubleshooting
+
+### Error 403: "denied" on ghcr.io
+
+**Problem**: `Can't install ghcr.io/home-assistant/aarch64-addon-llamacpp:1.0.0: 403 Client Error`
+
+**Cause**: The addon is trying to download a prebuilt image that doesn't exist.
+
+**Solution**: 
+1. Ensure the `image:` line in `config.yaml` is commented out
+2. Home Assistant will build the image locally from the `Dockerfile`
+3. First build requires 15-30 minutes
+
+### Slow build or timeout
+
+**Problem**: Installation seems stuck or times out.
+
+**Solution**:
+1. Increase timeout in Supervisor → System → Host → Hardware
+2. Ensure you have at least 2 GB free space
+3. Monitor logs during build: it might just be slow
+
+### Model not downloading
+
+**Problem**: Model remains stuck downloading.
+
+**Solution**:
+1. Verify your Home Assistant system's internet connectivity
+2. Check that the model URL is correct and accessible
+3. Try a smaller model for testing
+4. Check logs for specific errors
+
+### Out of Memory (OOM)
+
+**Problem**: Addon crashes with memory errors.
+
+**Solution**:
+1. Reduce `context_size` (e.g. from 2048 to 1024)
+2. Use a smaller model (2B instead of 8B)
+3. Reduce `parallel_requests` to 1
+4. Close other heavy addons
+
+### Poor performance
+
+**Problem**: Responses are very slow.
+
+**Solution**:
+1. Increase `threads` (e.g. 4-8 on multicore systems)
+2. If you have an NVIDIA GPU, enable `gpu_layers` (e.g. 20-35)
+3. Reduce `context_size` if you don't need long conversations
+4. Use Q4_K_M quantized models instead of Q8
+
+## 📝 Changelog
+
+### [1.0.2] - 2025-10-21
+
+#### Fixed
+- Alpine Linux compatible Dockerfile
+- Fixed apt-get error during Docker build
+- Static build for better compatibility
+
+### [1.0.1] - 2025-10-21
+
+#### Fixed
+- Multi-arch build configuration
+
+### [1.0.0] - 2025-10-21
+
+#### Added
+- Complete llama.cpp integration
+- OpenAI-compatible API
+- Multi-turn conversation management
+- Automatic model downloading
+- CUDA GPU support
+- Health monitoring
+- Complete documentation
+
+## 📄 License
+
+This project is released under the MIT license. See the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [llama.cpp](https://github.com/ggml-org/llama.cpp) - The amazing LLM engine
+- [Home Assistant](https://www.home-assistant.io/) - The best home automation platform
+- Hugging Face community for GGUF models
+
+## 📞 Support
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/Invernomut0/hassio-llamacpp/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Invernomut0/hassio-llamacpp/discussions)
+- 📧 **Email**: support@example.com
+
+## 🔗 Useful Links
+
+- [llama.cpp Documentation](https://github.com/ggml-org/llama.cpp/tree/master/docs)
+- [GGUF Models on Hugging Face](https://huggingface.co/models?library=gguf)
+- [Home Assistant Add-on Development](https://developers.home-assistant.io/docs/add-ons)
+- [Model Quantization](https://github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md)
+
+---
+
+**Made with ❤️ for the Home Assistant Community**
 
 ## 🛠️ Sviluppo
 
