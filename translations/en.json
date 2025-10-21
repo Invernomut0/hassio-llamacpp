@@ -1,0 +1,32 @@
+{
+  "configuration": {
+    "model_url": {
+      "name": "Model URL",
+      "description": "URL del modello GGUF da scaricare (es. da Hugging Face)"
+    },
+    "model_name": {
+      "name": "Model Name",
+      "description": "Nome del modello (usato per il file locale)"
+    },
+    "context_size": {
+      "name": "Context Size",
+      "description": "Dimensione della finestra di contesto in token (512-32768)"
+    },
+    "threads": {
+      "name": "CPU Threads",
+      "description": "Numero di thread CPU da utilizzare (1-32)"
+    },
+    "gpu_layers": {
+      "name": "GPU Layers",
+      "description": "Numero di layer del modello da caricare sulla GPU (0 = solo CPU)"
+    },
+    "parallel_requests": {
+      "name": "Parallel Requests",
+      "description": "Numero massimo di richieste parallele (1-8)"
+    },
+    "log_level": {
+      "name": "Log Level",
+      "description": "Livello di dettaglio dei log"
+    }
+  }
+}
