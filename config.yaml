@@ -30,4 +30,4 @@ schema:
   gpu_layers: int(0,100)
   parallel_requests: int(1,8)
   log_level: list(debug|info|warning|error)
-image: "ghcr.io/home-assistant/{arch}-addon-llamacpp"
+# image: "ghcr.io/home-assistant/{arch}-addon-llamacpp"  # Commentato per build locale

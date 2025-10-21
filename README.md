@@ -5,6 +5,8 @@
 
 Addon per Home Assistant che integra [llama.cpp](https://github.com/ggml-org/llama.cpp) per eseguire modelli LLM (Large Language Models) localmente con API compatibili OpenAI.
 
+> 🆘 **Hai problemi?** → Consulta la [Guida Rapida QUICKFIX](QUICKFIX.md) o la [Guida Troubleshooting Completa](TROUBLESHOOTING.md)
+
 ## 🎯 Caratteristiche
 
 - ✅ **Server LLM locale** - Nessuna dipendenza da servizi cloud
@@ -37,7 +39,9 @@ Aggiungi questo repository agli addon di Home Assistant:
 
 1. Trova "Llama.cpp LLM Server" nella lista degli addon
 2. Clicca su **Install**
-3. Attendi il completamento dell'installazione
+3. **⚠️ IMPORTANTE**: La prima installazione richiederà 15-30 minuti per compilare llama.cpp
+4. Attendi il completamento della build (controlla i log per il progresso)
+5. L'addon scaricherà automaticamente il modello LLM al primo avvio
 
 ### 3. Configura l'Addon
 
@@ -448,7 +452,59 @@ I contributi sono benvenuti! Segui queste linee guida:
 - ✅ Segui PEP 8 per Python
 - ✅ Commit atomici e messaggi descrittivi
 
-## 📝 Changelog
+## � Troubleshooting
+
+### Errore 403: "denied" su ghcr.io
+
+**Problema**: `Can't install ghcr.io/home-assistant/aarch64-addon-llamacpp:1.0.0: 403 Client Error`
+
+**Causa**: L'addon sta cercando di scaricare un'immagine precompilata che non esiste.
+
+**Soluzione**: 
+1. Assicurati che la riga `image:` in `config.yaml` sia commentata
+2. Home Assistant costruirà l'immagine localmente dal `Dockerfile`
+3. La prima build richiederà 15-30 minuti
+
+### Build lenta o timeout
+
+**Problema**: L'installazione sembra bloccata o va in timeout.
+
+**Soluzione**:
+1. Aumenta il timeout in Supervisor → System → Host → Hardware
+2. Assicurati di avere almeno 2 GB di spazio libero
+3. Monitora i log durante la build: potrebbe essere semplicemente lenta
+
+### Modello non si scarica
+
+**Problema**: Il modello rimane bloccato al download.
+
+**Soluzione**:
+1. Verifica la connettività internet del tuo sistema Home Assistant
+2. Controlla che l'URL del modello sia corretto e accessibile
+3. Prova con un modello più piccolo per testare
+4. Controlla i log per errori specifici
+
+### Out of Memory (OOM)
+
+**Problema**: L'addon crasha con errori di memoria.
+
+**Soluzione**:
+1. Riduci `context_size` (es. da 2048 a 1024)
+2. Usa un modello più piccolo (2B invece di 8B)
+3. Riduci `parallel_requests` a 1
+4. Chiudi altri addon pesanti
+
+### Performance scarse
+
+**Problema**: Le risposte sono molto lente.
+
+**Soluzione**:
+1. Aumenta `threads` (es. 4-8 su sistemi multicore)
+2. Se hai una GPU NVIDIA, abilita `gpu_layers` (es. 20-35)
+3. Riduci `context_size` se non hai bisogno di conversazioni lunghe
+4. Usa modelli quantizzati Q4_K_M invece di Q8
+
+## �📝 Changelog
 
 ### [1.0.0] - 2025-10-21
 
