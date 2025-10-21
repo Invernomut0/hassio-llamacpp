@@ -18,6 +18,18 @@ Guida rapida ai problemi più comuni e relative soluzioni immediate.
 
 ---
 
+## 🔴 Errore "apt-get: not found" durante build
+
+**Errore**: `/bin/ash: apt-get: not found` durante build Docker
+
+**Fix**: ✅ **RISOLTO nella v1.0.2+**
+
+Il Dockerfile ora usa Alpine Linux (apk) invece di Ubuntu (apt-get), compatibile con le immagini base di Home Assistant.
+
+**Se usi versione vecchia**: Aggiorna a v1.0.2 o successiva.
+
+---
+
 ## 🔴 Build troppo lenta o timeout
 
 **Fix immediato**:
