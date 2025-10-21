@@ -1,25 +1,27 @@
 ARG BUILD_FROM
-FROM ubuntu:22.04 AS builder
+FROM alpine:3.18 AS builder
 
-# Installazione dipendenze per build
-RUN apt-get update && apt-get install -y \
-    build-essential \
+# Installazione dipendenze per build su Alpine
+RUN apk add --no-cache \
+    build-base \
     cmake \
     git \
-    curl \
-    libcurl4-openssl-dev \
+    curl-dev \
     wget \
-    && rm -rf /var/lib/apt/lists/*
+    linux-headers \
+    pkgconfig
 
 # Clone e build llama.cpp
 WORKDIR /build
 RUN git clone https://github.com/ggml-org/llama.cpp.git
 WORKDIR /build/llama.cpp
 
-# Build con supporto CUDA opzionale (commentato per CPU-only)
-# Per GPU: aggiungere -DGGML_CUDA=ON
+# Build statico per massima compatibilità
+# -DGGML_STATIC=ON per build completamente statico
 RUN cmake -B build \
+    -DCMAKE_BUILD_TYPE=Release \
     -DGGML_NATIVE=OFF \
+    -DGGML_STATIC=ON \
     -DBUILD_SHARED_LIBS=OFF \
     -DLLAMA_CURL=ON \
     && cmake --build build --config Release --target llama-server -j$(nproc)
@@ -27,17 +29,18 @@ RUN cmake -B build \
 # Immagine finale leggera
 FROM ${BUILD_FROM}
 
-# Installazione runtime dependencies
-RUN apt-get update && apt-get install -y \
+# Installazione runtime dependencies per Alpine Linux
+RUN apk add --no-cache \
     python3 \
-    python3-pip \
+    py3-pip \
     curl \
-    libgomp1 \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    libgomp \
+    libstdc++ \
+    libgcc \
+    ca-certificates
 
 # Installazione dipendenze Python
-RUN pip3 install --no-cache-dir \
+RUN pip3 install --no-cache-dir --break-system-packages \
     requests \
     flask \
     flask-cors \
