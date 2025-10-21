@@ -30,7 +30,7 @@ Aggiungi questo repository agli addon di Home Assistant:
 
 1. Vai su **Supervisor** → **Add-on Store**
 2. Clicca sui tre puntini in alto a destra → **Repositories**
-3. Aggiungi l'URL: `https://github.com/[TUO_USERNAME]/hassio-llamacpp`
+3. Aggiungi l'URL: `https://github.com/Invernomut0/hassio-llamacpp`
 4. Clicca **Add**
 
 ### 2. Installa l'Addon
