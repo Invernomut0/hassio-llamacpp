@@ -17,12 +17,22 @@ from flask_cors import CORS
 # Importa modulo integrazione HA
 from ha_integration import HomeAssistantClient, HAContextBuilder
 
-# Configurazione logging
+# Configurazione logging - force flush per visibilità immediata
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    stream=sys.stdout,
+    force=True
 )
 logger = logging.getLogger(__name__)
+
+# Force unbuffered output
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
+
+logger.info("=" * 80)
+logger.info("🚀 HA Service Starting...")
+logger.info("=" * 80)
 
 # Flask app per servizi Home Assistant
 app = Flask(__name__)
@@ -656,14 +666,29 @@ def get_ha_context():
 
 def main():
     """Main entry point."""
+    logger.info("=" * 80)
+    logger.info("🔧 Initializing HA Service...")
+    logger.info("=" * 80)
+    
     # Attendi che llama-server sia pronto
+    logger.info("⏳ Waiting for llama-server...")
     if not wait_for_llama_server():
-        logger.error("Impossibile connettersi al server llama.cpp")
+        logger.error("❌ Impossibile connettersi al server llama.cpp")
         sys.exit(1)
     
+    logger.info("✅ Llama-server ready!")
+    
     # Avvia Flask app
-    logger.info("Avvio servizio Home Assistant API su porta 5000...")
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    logger.info("=" * 80)
+    logger.info("🚀 Starting Flask API server on port 5000...")
+    logger.info("=" * 80)
+    
+    # Disable Flask's default logging to avoid duplicates
+    import logging as flask_logging
+    log = flask_logging.getLogger('werkzeug')
+    log.setLevel(flask_logging.WARNING)
+    
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
 
 
 if __name__ == '__main__':

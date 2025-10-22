@@ -33,7 +33,12 @@ fi
 
 # Avvia il servizio Home Assistant in background
 bashio::log.info "Avvio servizio Home Assistant API..."
-python3 /ha_service.py &
+python3 /ha_service.py 2>&1 | sed 's/^/[HA-SERVICE] /' &
+HA_SERVICE_PID=$!
+bashio::log.info "Servizio HA avviato con PID: ${HA_SERVICE_PID}"
+
+# Aspetta che il servizio sia pronto
+sleep 2
 
 # Avvia llama-server con configurazione
 bashio::log.info "Avvio llama-server..."
@@ -49,4 +54,5 @@ exec llama-server \
     --parallel "$PARALLEL" \
     --host 0.0.0.0 \
     --port 8080 \
+    --jinja
     --jinja
