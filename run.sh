@@ -39,6 +39,7 @@ python3 /ha_service.py &
 bashio::log.info "Avvio llama-server..."
 bashio::log.info "Modello: ${MODEL_PATH}"
 bashio::log.info "Context size: ${CONTEXT_SIZE}, Threads: ${THREADS}, GPU layers: ${GPU_LAYERS}"
+bashio::log.info "Function calling/tools support: enabled (--jinja)"
 
 exec llama-server \
     --model "$MODEL_PATH" \
@@ -47,4 +48,5 @@ exec llama-server \
     --n-gpu-layers "$GPU_LAYERS" \
     --parallel "$PARALLEL" \
     --host 0.0.0.0 \
-    --port 8080
+    --port 8080 \
+    --jinja
