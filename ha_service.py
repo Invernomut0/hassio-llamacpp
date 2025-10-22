@@ -87,6 +87,22 @@ def call_llama_api(
     """
     url = f"{LLAMA_SERVER_URL}/v1/chat/completions"
     
+    # ✅ VALIDAZIONE: Verifica formato messaggi
+    if not isinstance(messages, list) or not messages:
+        logger.error(f"❌ Messaggi invalidi: deve essere una lista non vuota, ricevuto: {type(messages)}")
+        raise ValueError("messages deve essere una lista non vuota")
+    
+    for idx, msg in enumerate(messages):
+        if not isinstance(msg, dict):
+            logger.error(f"❌ Messaggio [{idx}] invalido: deve essere un dict, ricevuto: {type(msg)}")
+            raise ValueError(f"Messaggio [{idx}] deve essere un dict")
+        if 'role' not in msg or 'content' not in msg:
+            logger.error(f"❌ Messaggio [{idx}] incompleto: {msg}")
+            raise ValueError(f"Messaggio [{idx}] deve avere 'role' e 'content'")
+        if msg['role'] not in ['system', 'user', 'assistant']:
+            logger.error(f"❌ Messaggio [{idx}] role invalido: {msg['role']}")
+            raise ValueError(f"Role deve essere 'system', 'user' o 'assistant', non '{msg['role']}'")
+    
     payload = {
         "messages": messages,
         "temperature": temperature,
@@ -94,12 +110,44 @@ def call_llama_api(
         "stream": stream
     }
     
+    # 🔍 DEBUG: Log dettagliato della richiesta
+    logger.info("=" * 80)
+    logger.info("📤 CHIAMATA LLAMA API")
+    logger.info(f"URL: {url}")
+    logger.info(f"Temperature: {temperature}, Max tokens: {max_tokens}, Stream: {stream}")
+    logger.info(f"Numero messaggi: {len(messages)}")
+    for idx, msg in enumerate(messages):
+        content_preview = str(msg.get('content', ''))[:200]
+        content_len = len(str(msg.get('content', '')))
+        logger.info(f"  [{idx}] role={msg.get('role')}, content_len={content_len}")
+        logger.info(f"       preview: {content_preview}{'...' if content_len > 200 else ''}")
+    logger.info("=" * 80)
+    
     try:
         response = requests.post(url, json=payload, timeout=120)
+        
+        # 🔍 DEBUG: Log della risposta
+        logger.info(f"📥 RISPOSTA LLAMA: status={response.status_code}")
+        if response.status_code != 200:
+            logger.error(f"❌ Errore HTTP {response.status_code}")
+            logger.error(f"Response headers: {dict(response.headers)}")
+            logger.error(f"Response body: {response.text}")
+        
         response.raise_for_status()
-        return response.json()
+        result = response.json()
+        
+        # Log successo
+        if 'choices' in result and len(result['choices']) > 0:
+            response_preview = result['choices'][0].get('message', {}).get('content', '')[:100]
+            logger.info(f"✅ Risposta OK: {response_preview}...")
+        
+        return result
     except requests.exceptions.RequestException as e:
-        logger.error(f"Errore chiamata API llama.cpp: {e}")
+        logger.error(f"❌ Errore chiamata API llama.cpp: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            logger.error(f"Response status: {e.response.status_code}")
+            logger.error(f"Response headers: {dict(e.response.headers)}")
+            logger.error(f"Response body: {e.response.text}")
         raise
 
 
